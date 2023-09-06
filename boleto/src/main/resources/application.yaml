@@ -1,0 +1,33 @@
+debug: false
+server:
+  port: "${PORT:3000}"
+  shutdown: graceful
+  servlet:
+    context-path: ""
+  error:
+    include-binding-errors: never
+    include-exception: false
+    include-message: never
+    include-stacktrace: never
+
+spring:
+  application:
+    name: "app-boleto"
+  profiles:
+    active: "${SPRING_PROFILES_ACTIVE:}"
+  main:
+    banner-mode: off
+  datasource:
+    url: "jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
+    name: "${DATABASE_NAME}"
+    username: "${DATABASE_USERNAME}"
+    password: "${DATABASE_PASSWORD}"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgresPlusDialect
+  devtools:
+    livereload:
+      enabled: false
+  flyway:
+    enabled: false

@@ -1,0 +1,34 @@
+---
+debug: true
+
+server:
+  shutdown: immediate
+  error:
+    include-binding-errors: always
+    include-exception: true
+    include-message: always
+    include-stacktrace: always
+
+spring:
+  jpa:
+    show-sql: true
+  devtools:
+    livereload:
+      enabled: true
+  flyway:
+    enabled: "${FLYWAY_ENABLED:false}"
+    user: "${DATABASE_USERNAME}"
+    password: "${DATABASE_PASSWORD}"
+    url: "jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
+    table: "migrations"
+    driver-class-name: "org.postgresql.Driver"
+    sql-migration-separator: "-"
+    sql-migration-prefix: "0"
+    validate-on-migrate: true
+    fail-on-missing-locations: true
+    encoding: UTF-8
+    locations: "classpath:migrations"
+    connect-retries: 3
+    connect-retries-interval: "30s"
+
+---
