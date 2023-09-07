@@ -1,11 +1,7 @@
 package com.example.common.events;
 
-public interface Producer {
-  void send(String id, String message) throws RuntimeException;
+public interface Producer<T> {
+	void send(String routingKey, Object model) throws RuntimeException;
 
-  void send(String id, Object model) throws RuntimeException;
-
-  Object sendAndReceived(String id, String message) throws RuntimeException;
-
-  Object sendAndReceived(String id, Object model) throws RuntimeException;
+	MessageStreaming<T> exchange(String routingKey, Object model) throws RuntimeException;
 }
