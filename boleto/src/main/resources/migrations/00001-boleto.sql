@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS boleto
 (
-	uuid                  UUID           NOT NULL,
+	uuid                  TEXT           NOT NULL,
 	valor                 DECIMAL(10, 2) NOT NULL,
 	vencimento            TIMESTAMPTZ    NOT NULL,
-	uuid_associado        UUID           NOT NULL,
+	uuid_associado        TEXT           NOT NULL,
 	documento_pagador     VARCHAR(14)    NOT NULL,
 	nome_pagador          VARCHAR(50)    NOT NULL,
 	nome_fantasia_pagador VARCHAR(50),
 	situacao              TEXT           NOT NULL,
 
 	CONSTRAINT pk_boleto PRIMARY KEY (uuid),
-	CONSTRAINT ck_boleto_situacao CHECK (situacao IN ('PAGO', 'PENDENTE', 'CANCELADO')),
+	CONSTRAINT ck_boleto_situacao CHECK (situacao IN ('PAGO', 'PENDENTE', 'CANCELADO', 'CRIADO')),
 	CONSTRAINT ck_boleto_vencimento CHECK (vencimento >= now())
 );
 

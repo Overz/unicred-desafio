@@ -1,3 +1,2 @@
-*
-!docker-compose.yaml
-!.gitignore
+*.iml
+.idea

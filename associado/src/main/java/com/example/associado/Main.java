@@ -5,15 +5,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 
-@SpringBootApplication(
-	exclude = {
-		RabbitAutoConfiguration.class
-	}
-)
+import java.nio.file.Paths;
+
+@SpringBootApplication()
 public class Main {
 
 	public static void main(String[] args) {
-		Dotenv.configure().systemProperties().ignoreIfMissing().load();
+		env();
 		SpringApplication.run(Main.class, args);
+	}
+
+	private static void env() {
+		String root = System.getProperty("user.dir");
+		String project = Paths.get(root, "associado").toAbsolutePath().toString();
+		Dotenv.configure().directory(project).systemProperties().ignoreIfMissing().load();
 	}
 }

@@ -62,10 +62,10 @@ public class AssociadoService {
   }
 
   public void excluir(String cpfcnpj) {
-    // TODO
+		repo.delete(Associado.builder().documento(cpfcnpj).build());
   }
 
-  public Associado consultarDocumento(String cpfcnpj) {
+  public Associado consultarPorCpfCnpj(String cpfcnpj) {
     Associado example = Associado.builder().documento(cpfcnpj).build();
     Optional<Associado> data = repo.findOne(Example.of(example));
 

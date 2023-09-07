@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "Restarting..."
+
+docker-compose down
+
+docker volume rm unicred-postgres --force
+docker volume rm unicred-rabbitmq --force
+
+docker-compose up

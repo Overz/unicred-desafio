@@ -26,8 +26,18 @@ spring:
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgresPlusDialect
+  rabbitmq:
+    host: "${RABBITMQ_HOST}"
+    port: "${RABBITMQ_PORT}"
+    username: "${RABBITMQ_USERNAME}"
+    password: "${RABBITMQ_PASSWORD}"
+    template:
+      reply-timeout: "${RABBITMQ_REPLY_TIMEOUT}"
   devtools:
     livereload:
       enabled: false
   flyway:
     enabled: false
+logging:
+  level:
+    com.example: debug
