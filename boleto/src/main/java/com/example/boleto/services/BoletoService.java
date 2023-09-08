@@ -1,7 +1,7 @@
 package com.example.boleto.services;
 
 import com.example.boleto.models.Boleto;
-import com.example.boleto.repositories.BoletoRepositories;
+import com.example.boleto.repositories.BoletoRepository;
 import com.example.common.constants.BoletoConstants;
 import com.example.common.errors.BadRequestError;
 import com.example.common.errors.NotFoundError;
@@ -18,13 +18,9 @@ import java.util.Optional;
 public class BoletoService {
 
 	@Autowired
-	private BoletoRepositories repo;
+	private BoletoRepository repo;
 
 	public Boleto criarBoleto(Boleto o) {
-		if (o.getVencimento().isBefore(LocalDateTime.now())) {
-			throw new BadRequestError("Vencimento do boleto menor que a data atual");
-		}
-
 		return repo.save(o);
 	}
 
@@ -76,8 +72,6 @@ public class BoletoService {
 	}
 
 	public void pagarBoleto(String id, String cpfcnpj, BigDecimal valor) {
-//		Boleto example = Boleto.builder().uuid(id).documento_pagador(cpfcnpj).valor(valor).build();
-//		Optional<Boleto> opt = repo.findOne(Example.of(example));
 		Optional<Boleto> opt = repo.consultarBoletoParaPagamento(id, cpfcnpj, valor);
 
 		if (opt.isEmpty()) {

@@ -38,6 +38,11 @@ spring:
       enabled: false
   flyway:
     enabled: false
+
 logging:
   level:
     com.example: debug
+
+custom:
+  boleto:
+    vencimento: 30

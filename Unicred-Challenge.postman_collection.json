@@ -1,0 +1,465 @@
+{
+	"info": {
+		"_postman_id": "2e77d8bf-f722-4997-a4fd-4a07561b0277",
+		"name": "Unicred-Challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12072135"
+	},
+	"item": [
+		{
+			"name": "associado",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "novo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"nome\": \"joao\",\n\t\"tipoPessoa\": \"PF\",\n\t\"documento\": \"01234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/associado",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"associado"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "atualizar",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"nome\": \"batata\",\n\t\"tipoPessoa\": \"PF\",\n\t\"documento\": \"98958205008\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/associado/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"associado",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "01234567890"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "consultar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/associado/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"associado",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "01234567890"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/associado",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"associado"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "excluir",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/associado/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"associado",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "01234567890"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "teste-message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"exchange\": \"fanout:arquivo\",\n\t\"routing\": \"ARQUIVO_ENVIA_DADOS_PARA_BOLETO_ROUTING_KEY\",\n\t\"subject\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/message",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"message"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "boleto",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "novo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"valor\": 100.00,\n\t\"associado\": \"-K038zYDIgQYSnLMfu877\",\n\t\"nomePagador\": \"ricardo\",\n\t\"vencimento\": \"2023-09-10T23:59:59.999Z\",\n\t\"documentoPagador\": \"01234567890\",\n\t\"situacao\": \"PENDENTE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/boleto",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"boleto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "consultar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/boleto/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"boleto",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "e8D2gUskJwupwAkAOrjA3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/boleto",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"boleto"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listar-por-associado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/boleto/:id/associado",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"boleto",
+								":id",
+								"associado"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "fJgir2zO_TiqlDBt20Y9F"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pagar",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"documento\": \"98958205008\",\n\t\"valor\": 100.00\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/boleto/:id/pagar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"boleto",
+								":id",
+								"pagar"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "e8D2gUskJwupwAkAOrjA3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "teste-message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"exchange\": \"fanout:arquivo\",\n\t\"routing\": \"ARQUIVO_ENVIA_DADOS_PARA_BOLETO_ROUTING_KEY\",\n\t\"subject\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/message",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"message"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "arquivo",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "processar-caminho",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"caminho\": \"/home/chris/dev/github/challanges/ilia/unicred-desafio/arquivo/src/main/resources/mocks\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/arquivo/processar-caminho",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"arquivo",
+								"processar-caminho"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "teste-message",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"exchange\": \"fanout:arquivo\",\n\t\"routing\": \"ARQUIVO_ENVIA_DADOS_PARA_BOLETO_ROUTING_KEY\",\n\t\"subject\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/message",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"message"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

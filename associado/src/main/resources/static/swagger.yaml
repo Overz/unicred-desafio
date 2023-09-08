@@ -1,0 +1,185 @@
+openapi: "3.0.3"
+
+info:
+  title: "Associado"
+  description: "Criação de associados"
+  version: "0.0.1"
+
+servers:
+  - url: "http://localhost:3000"
+    description: "Endpoint de desenvolvimento local"
+
+paths:
+  /health:
+    get:
+      summary: "GET health"
+      operationId: "health"
+      description: "Application Health Check"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ok_True"
+              examples:
+                OK_True:
+                  $ref: "#/components/schemas/Ok_True"
+  /message:
+    post:
+      summary: "POST message"
+      operationId: "teste"
+      description: "Developers Endpoint to test the message streaming"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthCheck"
+              examples:
+                OK_True:
+                  $ref: "#/components/schemas/HealthCheck"
+  /associado:
+    get:
+      summary: "GET associado"
+      operationId: "listar"
+      description: "Lista todos os associados"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/AssociadoDTO"
+    post:
+      summary: "POST associado"
+      operationId: "criarAssociado"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssociadoDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssociadoDTO"
+  /associado/{cpfcnpj}:
+    get:
+      summary: "GET associado/{cpfcnpj}"
+      operationId: "consultarPorCpfCnpj"
+      description: "Consulta um associado por CPF/CNPJ"
+      parameters:
+        - name: "cpfcnpj"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssociadoDTO"
+    put:
+      summary: "PUT associado/{cpfcnpj}"
+      operationId: "atualizarAssociado"
+      description: "Atualiza um associado por CPF/CNPJ"
+      parameters:
+        - name: "cpfcnpj"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssociadoDTO"
+        required: true
+      responses:
+        "204":
+          description: "No Content"
+    delete:
+      summary: "DELETE associado/{cpfcnpj}"
+      operationId: "excluir"
+      description: "Deleta um associado por CPF/CNPJ caso não exista boletos pendentes"
+      parameters:
+        - name: "cpfcnpj"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+
+components:
+  schemas:
+    Ok_True:
+      type: "object"
+      properties:
+        ok:
+          type: boolean
+    HealthCheck:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Nome da aplicação"
+        date:
+          type: string
+          description: "Data atual"
+        profiles:
+          type: string
+          description: "Profile em execução"
+          enum:
+            - dev
+            - prod
+    MessageDTO:
+      type: object
+      properties:
+        exchange:
+          type: string
+          required: true
+        routing:
+          type: string
+          required: true
+        subject:
+          type: string
+          required: false
+        data:
+          type: object
+          required: false
+    AssociadoDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        documento:
+          type: "string"
+          description: "CPF/CNPJ sem formatação"
+        tipoPessoa:
+          type: "string"
+          enum:
+            - PF
+            - PJ
+        nome:
+          type: "string"

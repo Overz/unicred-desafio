@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS boleto
 	situacao              TEXT           NOT NULL,
 
 	CONSTRAINT pk_boleto PRIMARY KEY (uuid),
-	CONSTRAINT ck_boleto_situacao CHECK (situacao IN ('PAGO', 'PENDENTE', 'CANCELADO', 'CRIADO')),
+	CONSTRAINT ck_boleto_situacao CHECK (situacao IN ('PAGO', 'PENDENTE', 'CANCELADO')),
 	CONSTRAINT ck_boleto_vencimento CHECK (vencimento >= now())
 );
 

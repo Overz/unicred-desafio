@@ -1,6 +1,7 @@
 package com.example.boleto.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class HealthController {
 	@Value("#{environment.getActiveProfiles()}")
 	private String[] profiles;
 
-	@GetMapping
+	@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 	public Object health() {
 		Map<String, Object> data = new HashMap<>();
 		data.put("name", name);

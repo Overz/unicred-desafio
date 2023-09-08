@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-public interface BoletoRepositories extends JpaRepository<Boleto, String> {
+public interface BoletoRepository extends JpaRepository<Boleto, String> {
 
 	@Query("select count(*) from Boleto where situacao != 'PAGO' and uuid_associado = ?1")
 	long contarBoletosNaoPagosPorAssociado(String id);

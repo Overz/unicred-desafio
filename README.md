@@ -32,3 +32,30 @@ automáticamente ao iniciar a infra com docker.
 ## RabbitMQ
 
 Neste [documento](./RabbitMQ.md) explica de como funciona o Pub/Sub do RabbitMQ.
+
+Todos os eventos emitidos estão no pacote `common`.
+
+Em resumo:
+
+- **ASSOCIADO:** Ao tentar excluir o associado, uma mensagem para a fila `direct:associado` é enviada para o
+	módulo `boleto` que verifica se o associado possui boletos pendentes para o pagamento, caso sim,
+	a exclusão do associado não é permitida.
+
+- **BOLETO:** Ao criar um novo boleto, o módulo `boleto` envia uma mensagem para a fila `direct:boleto` ao
+	módulo `associado` que consulta dados do associado informado na requisição para criação do boleto
+	no modulo `boleto` e retorna essas informações ou `nulo`caso não encontrado.
+
+- **ARQUIVO:** Ao processar em paralelo um diretório de arquivos que contem arquivos `.csv` (alterado no
+	arquivo application.yaml do módulo), uma mensagem `direct:arquivo` é enviada para o módulo `boleto` que
+	também consulta o `documento`(cpf/cnpj) do associado cadastrado no arquivo processado no módulo `associado`,
+	caso todos os dados forem _OK_, o boleto será cadastrado.
+
+---
+
+## Mocks
+
+O módulo `arquivo` possui um arquivo `.csv` neste [caminho](./arquivo/src/main/resources/mocks/0001-mock.csv)
+podendo ser utilizado para o envio/teste do processamento de arquivos
+
+_Observação: o associado com o mesmo CPF/CNPJ precisa estar cadastrado antes no banco de dados para que tudo
+funcione perfeitamente._

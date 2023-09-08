@@ -1,0 +1,245 @@
+openapi: "3.0.3"
+
+info:
+  title: "Boleto"
+  description: "Emissão de boletos"
+  version: "0.0.1"
+
+servers:
+  - url: "http://localhost:3000"
+    description: "Endpoint de desenvolvimento local"
+
+paths:
+  /health:
+    get:
+      summary: "GET health"
+      operationId: "health"
+      description: "Application Health Check"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthCheck"
+              examples:
+                OK_True:
+                  $ref: "#/components/schemas/HealthCheck"
+  /message:
+    post:
+      summary: "POST message"
+      operationId: "teste"
+      description: "Developers Endpoint to test the message streaming"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "string"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ok_True"
+              examples:
+                OK_True:
+                  $ref: "#/components/schemas/Ok_True"
+  /boleto:
+    get:
+      summary: "GET boleto"
+      operationId: "listar"
+      description: "Lista todos os boletos"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/BoletoDTO"
+    post:
+      summary: "POST boleto"
+      operationId: "criarBoleto"
+      description: "Cria um boleto caso o associado informado exista"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BoletoDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoletoDTO"
+  /boleto/{id}:
+    get:
+      summary: "GET boleto/{id}"
+      operationId: "consultarBoleto"
+      description: "Consulta um boleto por ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoletoDTO"
+    put:
+      summary: "PUT boleto/{id}"
+      operationId: "atualizarBoleto"
+      description: "Atualiza um boleto por ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BoletoDTO"
+        required: true
+      responses:
+        "204":
+          description: "No Content"
+    delete:
+      summary: "DELETE boleto/{id}"
+      operationId: "excluirBoleto"
+      description: "Exclui um boleto por ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+  /boleto/{id}/associado:
+    get:
+      summary: "GET boleto/{id}/associado"
+      operationId: "listarBoletosPorAssociado"
+      description: "Consulta um boleto por ID do Associado"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/BoletoDTO"
+  /boleto/{id}/pagar:
+    put:
+      summary: "PUT boleto/{id}/pagar"
+      operationId: "pagarBoleto"
+      description: "Realiza o pagamento do boleto caso não tenha sido pago ainda"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PagarBoletoDTO"
+        required: true
+      responses:
+        "204":
+          description: "No Content"
+
+components:
+  schemas:
+    Ok_True:
+      type: "object"
+      properties:
+        ok:
+          type: boolean
+    HealthCheck:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Nome da aplicação"
+        date:
+          type: string
+          description: "Data atual"
+        profiles:
+          type: string
+          description: "Profile em execução"
+          enum:
+            - dev
+            - prod
+    MessageDTO:
+      type: object
+      properties:
+        exchange:
+          type: string
+          required: true
+        routing:
+          type: string
+          required: true
+        subject:
+          type: string
+          required: false
+        data:
+          type: object
+          required: false
+    BoletoDTO:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        valor:
+          type: "number"
+          required: true
+        vencimento:
+          type: "string"
+          format: "date-time"
+          required: true
+        associado:
+          type: "string"
+          required: true
+        documentoPagador:
+          type: "string"
+          required: true
+        nomePagador:
+          type: "string"
+          required: true
+        nomeFantasiaPagador:
+          type: "string"
+        situacao:
+          type: "string"
+    PagarBoletoDTO:
+      type: "object"
+      properties:
+        documento:
+          type: "string"
+          required: true
+        valor:
+          type: "number"
+          required: true

@@ -1,0 +1,113 @@
+openapi: "3.0.3"
+
+info:
+  title: "Arquivo"
+  description: "Processamento de documentos"
+  version: "0.0.1"
+
+servers:
+  - url: "http://localhost:3000"
+    description: "Endpoint de desenvolvimento local"
+
+paths:
+  /health:
+    get:
+      summary: "GET health"
+      operationId: "health"
+      description: "Application Health Check"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthCheck"
+              examples:
+                OK_True:
+                  $ref: "#/components/schemas/HealthCheck"
+  /message:
+    post:
+      summary: "POST message"
+      description: "Developers Endpoint to test the message streaming"
+      operationId: "teste"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ok_True"
+              examples:
+                OK_True:
+                  $ref: "#/components/schemas/Ok_True"
+  /arquivo/processar-caminho:
+    post:
+      summary: "POST arquivo/processar-caminho"
+      description: "Endpoint that will process the directorie with async and parallel programming mode"
+      operationId: "processar"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArquivoComPathDTO"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ok_True"
+              examples:
+                OK_True:
+                  $ref: "#/components/schemas/Ok_True"
+
+components:
+  schemas:
+    Ok_True:
+      type: "object"
+      properties:
+        ok:
+          type: boolean
+    HealthCheck:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Nome da aplicação"
+        date:
+          type: string
+          description: "Data atual"
+        profiles:
+          type: string
+          description: "Profile em execução"
+          enum:
+            - dev
+            - prod
+    MessageDTO:
+      type: object
+      properties:
+        exchange:
+          type: string
+          required: true
+        routing:
+          type: string
+          required: true
+        subject:
+          type: string
+          required: false
+        data:
+          type: object
+          required: false
+    ArquivoComPathDTO:
+      type: "object"
+      properties:
+        caminho:
+          type: "string"
+          required: true

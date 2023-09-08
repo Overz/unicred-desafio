@@ -2,42 +2,74 @@ package com.example.boleto.events;
 
 import com.example.common.events.EventHelpers;
 import com.example.common.events.MessageStreaming;
-import com.example.common.events.Producer;
+import com.example.common.events.Publisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
-import static com.example.common.events.Events.Boleto.BOLETO_EXCHANGE;
+import static com.example.common.events.Events.BOLETO_EXCHANGE;
 
 @Slf4j
 @Component
-public class BoletoEventPublisher extends EventHelpers implements Producer<Map<String, Object>> {
+public class BoletoEventPublisher extends EventHelpers implements Publisher {
+
+	private final RabbitTemplate template;
 
 	@Autowired
-	private RabbitTemplate template;
-
-	@Override
-	public void send(String routingKey, Object model) throws RuntimeException {
-		template.convertAndSend(BOLETO_EXCHANGE, routingKey, toMessage(routingKey, model));
+	public BoletoEventPublisher(RabbitTemplate template) {
+		template.setExchange(BOLETO_EXCHANGE);
+		this.template = template;
 	}
 
 	@Override
-	public MessageStreaming<Map<String, Object>> exchange(String routingKey, Object model) throws AmqpException {
-		log.info("Realizando exchange de '{}' - '{}'", routingKey, model);
+	public void send(Object model) throws RuntimeException {
+		template.convertAndSend(model);
+	}
 
-		String content = (String) template.convertSendAndReceive(
-			BOLETO_EXCHANGE,
-			routingKey,
-			toMessage(routingKey, model)
-		);
+	@Override
+	public void send(String routingKey, Object model) throws RuntimeException {
+		template.convertAndSend(routingKey, toMessage(routingKey, model));
+	}
 
-		MessageStreaming<Map<String, Object>> messageStreaming = fromMessage(content);
-		log.info("Exchange realizado '{}'", messageStreaming);
+	@Override
+	public void send(String routingKey, String message) throws RuntimeException {
+		template.convertAndSend(routingKey, message);
+	}
 
-		return messageStreaming;
+	@Override
+	public void send(String exchange, String routingKey, String message) throws RuntimeException {
+		template.convertAndSend(exchange, routingKey, message);
+	}
+
+	@Override
+	public void send(String exchange, String routingKey, Object model) throws RuntimeException {
+		template.convertAndSend(exchange, routingKey, toMessage(routingKey, model));
+	}
+
+	@Override
+	public MessageStreaming exchange(Object model) throws RuntimeException {
+		return fromMessage((String) template.convertSendAndReceive(toMessage(model)));
+	}
+
+	@Override
+	public MessageStreaming exchange(String routingKey, Object model) throws AmqpException {
+		return fromMessage((String) template.convertSendAndReceive(routingKey, toMessage(routingKey, model)));
+	}
+
+	@Override
+	public MessageStreaming exchange(String routingKey, String message) throws RuntimeException {
+		return fromMessage((String) template.convertSendAndReceive(routingKey, message));
+	}
+
+	@Override
+	public MessageStreaming exchange(String exchange, String routingKey, String message) throws RuntimeException {
+		return fromMessage((String) template.convertSendAndReceive(exchange, routingKey, message));
+	}
+
+	@Override
+	public MessageStreaming exchange(String exchange, String routingKey, Object model) throws RuntimeException {
+		return fromMessage((String) template.convertSendAndReceive(exchange, routingKey, toMessage(routingKey, model)));
 	}
 }

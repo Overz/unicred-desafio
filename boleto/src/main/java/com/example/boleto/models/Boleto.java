@@ -52,7 +52,9 @@ public class Boleto implements Serializable {
 
 	@PrePersist
 	public void createId() {
-		this.uuid = nanoid();
+		if (this.uuid == null || this.uuid.isEmpty()) {
+			this.uuid = nanoid();
+		}
 	}
 
 	public BoletoDTO toDTO() {

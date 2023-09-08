@@ -4,40 +4,26 @@ public class Events {
 	private Events() {
 	}
 
-	public static class Associado {
-		private Associado() {
-		}
+	/**
+	 * ASSOCIADO
+	 */
+	public static final String ASSOCIADO_EXCHANGE = "direct:associado";
+	public static final String ASSOCIADO_EXCLUIR_QUEUE = "ASSOCIADO_EXCLUIR_QUEUE";
+	public static final String ASSOCIADO_EXCLUIR_ROUTING_KEY = "ASSOCIADO_EXCLUIR_ROUTING_KEY";
 
-		/**
-		 * Mediador, decide o que vai ser feito com a mensagem
-		 */
-		public static final String ASSOCIADO_EXCHANGE = "fanout:associado";
-		public static final String ASSOCIADO_QUEUE_NAME = "queue:associado";
-		public static final String ASSOCIADO_EXCLUIR_QUEUE_NAME = "queue:associado:delete";
-		public static final String ASSOCIADO_ATUALIZADO_QUEUE_NAME = "queue:associado:updated";
-		public static final String ASSOCIADO_CRIADO_ROUTING_KEY = "routing:associado:new";
-		public static final String ASSOCIADO_EXCLUIR_ROUTING_KEY = "routing:associado:delete";
-		public static final String ASSOCIADO_ATUALIZADO_ROUTING_KEY = "routing:associado:updated";
-	}
+	/**
+	 * BOLETO
+	 */
+	public static final String BOLETO_EXCHANGE = "direct:boleto";
+	public static final String BOLETO_CONSULTAR_ASSOCIADO_QUEUE = "BOLETO_CONSULTAR_ASSOCIADO_QUEUE";
+	public static final String BOLETO_CONSULTAR_ASSOCIADO_ROUTING_KEY = "BOLETO_CONSULTAR_ASSOCIADO_ROUTING_KEY";
+	public static final String BOLETO_CONSULTAR_ASSOCIADO_POR_ID_SUBJECT = "BOLETO_CONSULTAR_ASSOCIADO_POR_ID_SUBJECT";
+	public static final String BOLETO_CONSULTAR_ASSOCIADO_POR_CPFCNPJ_SUBJECT = "BOLETO_CONSULTAR_ASSOCIADO_POR_CPFCNPJ_SUBJECT";
 
-	public static class Boleto {
-		private Boleto() {
-		}
-
-		public static final String BOLETO_EXCHANGE = "fanout:boleto";
-		public static final String BOLETO_QUEUE_NAME = "queue:boleto";
-		public static final String BOLETO_CRIADO_ROUTING_KEY = "routing:boleto:new";
-		public static final String BOLETO_EXCLUIR_ROUTING_KEY = "routing:boleto:delete";
-		public static final String BOLETO_ATUALIZADO_ROUTING_KEY = "routing:boleto:updated";
-	}
-
-	public static class Arquivo {
-		private Arquivo() {
-		}
-
-		public static final String ARQUIVO_EXCHANGE = "fanout:arquivo";
-		public static final String ARQUIVO_QUEUE_NAME = "queue:arquivo";
-		public static final String ARQUIVO_CRIADO_ROUTING_KEY = "routing:arquivo:new";
-		public static final String ARQUIVO_PROCESSADO_ROUTING_KEY = "routing:arquivo:finished";
-	}
+	/**
+	 * ARQUIVO
+	 */
+	public static final String ARQUIVO_EXCHANGE = "direct:arquivo";
+	public static final String ARQUIVO_PROCESSADO_QUEUE = "ARQUIVO_PROCESSADO_QUEUE";
+	public static final String ARQUIVO_ENVIA_DADOS_PARA_BOLETO_ROUTING_KEY = "ARQUIVO_ENVIA_DADOS_PARA_BOLETO_ROUTING_KEY";
 }

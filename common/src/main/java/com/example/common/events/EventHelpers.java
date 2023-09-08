@@ -4,8 +4,16 @@ import com.example.common.mappers.MapperUtils;
 
 public abstract class EventHelpers {
 
+	public static String toMessage(Object o) {
+		return toMessage(null, null, o);
+	}
+
+	public static String toMessage(Integer sequence, Object o) {
+		return toMessage(null, sequence, o);
+	}
+
 	public static String toMessage(String subject, Object o) {
-		return toMessage(subject, -1, o);
+		return toMessage(subject, null, o);
 	}
 
 	/**
@@ -16,20 +24,23 @@ public abstract class EventHelpers {
 	 * @param o        Objeto enviado
 	 * @return Mensagem serializada
 	 */
-	public static String toMessage(String subject, int sequence, Object o) {
-		MessageStreaming<Object> m = new MessageStreaming<>();
-		m.setSubject(subject);
+	public static String toMessage(String subject, Integer sequence, Object o) {
+		MessageStreaming m = new MessageStreaming();
 		m.setData(o);
 		m.setTime(System.currentTimeMillis());
 
-		if (sequence > -1) {
+		if (subject != null && !subject.isEmpty()) {
+			m.setSubject(subject);
+		}
+
+		if (sequence != null) {
 			m.setSequence(sequence);
 		}
 
 		return MapperUtils.toJson(m);
 	}
 
-	public static <T> MessageStreaming<T> fromMessage(String message) {
+	public static MessageStreaming fromMessage(String message) {
 		return MapperUtils.fromJson(message, MessageStreaming.class);
 	}
 }

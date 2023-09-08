@@ -5,25 +5,24 @@ import com.example.boleto.dto.PagarBoletoDTO;
 import com.example.boleto.events.BoletoEventPublisher;
 import com.example.boleto.models.Boleto;
 import com.example.boleto.services.BoletoService;
-import com.example.common.constants.ProfilesConstants;
 import com.example.common.errors.BadRequestError;
+import com.example.common.events.BoletoEventDTO;
+import com.example.common.events.EventHelpers;
+import com.example.common.events.Events;
 import com.example.common.events.MessageStreaming;
 import com.example.common.validations.CpfCnpj;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static com.example.common.events.Events.Boleto.*;
 
 /**
  * - A combinação do identificador do boleto e do identificador do associado deve
@@ -49,33 +48,19 @@ public class BoletoController {
 	@Autowired
 	private BoletoEventPublisher publisher;
 
-	/**
-	 * Endpoint para teste se a mensagem esta funcionando
-	 * Funciona apenas em Desenvolvimento
-	 *
-	 * @param routingKey id/subject
-	 * @param model      any
-	 */
-	@Profile(ProfilesConstants.DEV)
-	@PostMapping("/message/{routingKey}")
-	public ResponseEntity<Object> teste(
-		@PathVariable("routingKey") String routingKey,
-		@RequestBody Map<String, Object> model
-	) {
-		log.info("Enviando mensagem, routing: '{}'", routingKey);
-		MessageStreaming<Map<String, Object>> data = publisher.exchange(routingKey, model);
-
-		log.info("Resposta recebida, routing: '{}', json: '{}'", routingKey, data);
-		return ResponseEntity.ok().body(data);
-	}
-
-	@PostMapping
+	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<BoletoDTO> criarBoleto(@RequestBody @Valid BoletoDTO dto) {
 		if (CpfCnpj.isInvalid(dto.getDocumentoPagador())) {
 			throw new BadRequestError("CPF/CNPJ inválido");
 		}
 
-		MessageStreaming<Map<String, Object>> messageStreaming = publisher.exchange(BOLETO_CRIADO_ROUTING_KEY, dto);
+		if (dto.getVencimento().isBefore(LocalDateTime.now())) {
+			throw new BadRequestError("Vencimento do boleto menor que a data atual");
+		}
+
+		BoletoEventDTO event = new BoletoEventDTO(dto.getId(), dto.getValor(), dto.getVencimento(), dto.getAssociado(), dto.getDocumentoPagador(), dto.getNomePagador(), dto.getNomeFantasiaPagador(), dto.getSituacao());
+		String message = EventHelpers.toMessage(Events.BOLETO_CONSULTAR_ASSOCIADO_POR_ID_SUBJECT, event);
+		MessageStreaming messageStreaming = publisher.exchange(Events.BOLETO_CONSULTAR_ASSOCIADO_ROUTING_KEY, message);
 
 		if (messageStreaming.getData() == null) {
 			throw new BadRequestError("Associado não encontrado");
@@ -85,39 +70,39 @@ public class BoletoController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(boleto.toDTO());
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping(path = "/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void atualizarBoleto(@PathVariable("id") String boletoId, @RequestBody @Valid BoletoDTO dto) {
 		service.atualizarBoleto(boletoId, dto.toEntity());
 	}
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.OK)
-	public void excluirBoleto(@PathVariable("id") String boletoId) {
+	@DeleteMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public ResponseEntity<Map<String, Object>> excluirBoleto(@PathVariable("id") String boletoId) {
 		service.excluirBoletoPorId(boletoId);
+		return ResponseEntity.ok(Collections.singletonMap("ok", true));
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<BoletoDTO> consultarBoleto(@PathVariable("id") String boletoId) {
 		Boleto boleto = service.consultarBoletoPorId(boletoId);
 		return ResponseEntity.ok(boleto.toDTO());
 	}
 
-	@GetMapping("/{id}/associado")
+	@GetMapping(path = "/{id}/associado", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<List<BoletoDTO>> listarBoletosPorAssociado(@PathVariable("id") String id) {
 		List<Boleto> list = service.listarBoletosPorAssociado(id);
 		return ResponseEntity.ok(list.stream().map(Boleto::toDTO).toList());
 	}
 
-	@GetMapping
+	@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<List<BoletoDTO>> listar() {
 		List<Boleto> list = service.listar();
 		return ResponseEntity.ok(list.stream().map(Boleto::toDTO).toList());
 	}
 
-	@PutMapping("/{id}/pagar")
+	@PutMapping(path = "/{id}/pagar", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void pagarPorIdBoletoCpfCnpjAssociadoMaisValor(
+	public void pagarBoleto(
 		@PathVariable("id") String id,
 		@RequestBody @Valid PagarBoletoDTO dto
 	) {

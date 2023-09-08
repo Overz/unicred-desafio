@@ -2,48 +2,69 @@ package com.example.boleto.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.example.common.events.Events.Associado.ASSOCIADO_EXCHANGE;
-import static com.example.common.events.Events.Associado.ASSOCIADO_QUEUE_NAME;
-import static com.example.common.events.Events.Boleto.BOLETO_EXCHANGE;
-import static com.example.common.events.Events.Boleto.BOLETO_QUEUE_NAME;
+import static com.example.common.events.Events.*;
 
 @EnableRabbit
 @Configuration
 public class RabbitMQConfig {
 
 	@Bean
-	public Queue associadoQueue() {
-		return new Queue(ASSOCIADO_QUEUE_NAME);
+	public Queue associadoExcluirQueue() {
+		return new Queue(ASSOCIADO_EXCLUIR_QUEUE);
 	}
 
 	@Bean
-	public FanoutExchange associadoFanoutExchange() {
-		return new FanoutExchange(ASSOCIADO_EXCHANGE);
+	public DirectExchange associadoDirectExchange() {
+		return new DirectExchange(ASSOCIADO_EXCHANGE);
 	}
 
 	@Bean
-	public Binding associadoCriadoBinding() {
-		return BindingBuilder.bind(associadoQueue()).to(associadoFanoutExchange());
+	public Binding associadoExcluirBinding() {
+		return BindingBuilder
+			.bind(associadoExcluirQueue())
+			.to(associadoDirectExchange())
+			.with(ASSOCIADO_EXCLUIR_ROUTING_KEY);
 	}
 
 	@Bean
-	public Queue boletoQueue() {
-		return new Queue(BOLETO_QUEUE_NAME);
+	public DirectExchange boletoDirectExchange() {
+		return new DirectExchange(BOLETO_EXCHANGE);
 	}
 
 	@Bean
-	public FanoutExchange boletoFanoutExchange() {
-		return new FanoutExchange(BOLETO_EXCHANGE);
+	public Queue boletoConsultarAssociadoQueue() {
+		return new Queue(BOLETO_CONSULTAR_ASSOCIADO_QUEUE);
 	}
 
 	@Bean
-	public Binding boletoCriadoBinding() {
-		return BindingBuilder.bind(boletoQueue()).to(boletoFanoutExchange());
+	public Binding boletoConsultarAssociadoBinding() {
+		return BindingBuilder
+			.bind(boletoConsultarAssociadoQueue())
+			.to(boletoDirectExchange())
+			.with(BOLETO_CONSULTAR_ASSOCIADO_ROUTING_KEY);
+	}
+
+	@Bean
+	public DirectExchange arquivoDirectExchange() {
+		return new DirectExchange(ARQUIVO_EXCHANGE);
+	}
+
+	@Bean
+	public Queue arquivoProcessadoQueue() {
+		return new Queue(ARQUIVO_PROCESSADO_QUEUE);
+	}
+
+	@Bean
+	public Binding arquivoProcessadoBinding() {
+		return BindingBuilder
+			.bind(arquivoProcessadoQueue())
+			.to(arquivoDirectExchange())
+			.with(ARQUIVO_ENVIA_DADOS_PARA_BOLETO_ROUTING_KEY);
 	}
 }
