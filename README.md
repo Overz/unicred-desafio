@@ -6,6 +6,8 @@ As especificações do desafio estão neste [arquivo](./UNICRED_Prova_Tecnica_Ja
 - [Executando](#executando)
 - [RabbitMQ](#rabbitmq)
 
+> **ESTA APLICAÇÃO NÃO POSSUI `CONTEXT-PATH`**
+
 ---
 
 ## Setup
@@ -57,5 +59,28 @@ Em resumo:
 O módulo `arquivo` possui um arquivo `.csv` neste [caminho](./arquivo/src/main/resources/mocks/0001-mock.csv)
 podendo ser utilizado para o envio/teste do processamento de arquivos
 
-_Observação: o associado com o mesmo CPF/CNPJ precisa estar cadastrado antes no banco de dados para que tudo
-funcione perfeitamente._
+_Observação: o associado com o mesmo CPF/CNPJ de pelo menos uma linha do arquivo de mock precisa estar
+cadastrado antes no banco de dados para que tudo funcione perfeitamente._
+
+---
+
+## Swagger
+
+A documentação do swagger de cada serviço está disponível através da
+url `http://localhost:<port>/swagger-ui/index.html`
+
+Cada serviço disponibiliza de forma **estática** um arquivo `swagger.yaml` através do
+path `http://localhost:<port>/swagger.yaml`, utilizando a lib
+`org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0` é consumido através da configuração:
+
+```yaml
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    url: "/swagger.yaml"
+    disable-swagger-default-url: true
+```
+
+---

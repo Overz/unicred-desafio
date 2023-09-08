@@ -43,6 +43,18 @@ spring:
   flyway:
     enabled: false
 
+logging:
+  level:
+    com.example: debug
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    url: "/swagger.yaml"
+    disable-swagger-default-url: true
+
 custom:
   processamento:
     tipo-arquivo: '.csv'
