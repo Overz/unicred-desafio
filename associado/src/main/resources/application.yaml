@@ -19,7 +19,7 @@ spring:
   main:
     banner-mode: off
   datasource:
-    url: "jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
+    url: "jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?${DATABASE_QUERY:}"
     name: "${DATABASE_NAME}"
     username: "${DATABASE_USERNAME}"
     password: "${DATABASE_PASSWORD}"

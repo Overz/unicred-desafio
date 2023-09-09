@@ -52,8 +52,6 @@ public class AssociadoController {
 
 	@DeleteMapping(path = "/{cpfcnpj}", produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Map<String, Object>> excluir(@PathVariable("cpfcnpj") String cpfcnpj) {
-		log.debug("Solicitando remoção do documento '{}'", cpfcnpj);
-
 		Associado associado = service.consultarPorCpfCnpj(cpfcnpj);
 		AssociadoEventDTO event = new AssociadoEventDTO(associado.getUuid(), associado.getDocumento(), associado.getTipo_pessoa(), associado.getNome());
 		MessageStreaming messageStreaming = publisher.exchange(Events.ASSOCIADO_EXCLUIR_ROUTING_KEY, event);

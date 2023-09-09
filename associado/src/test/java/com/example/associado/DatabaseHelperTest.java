@@ -1,6 +1,5 @@
 package com.example.associado;
 
-
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.dbunit.database.DatabaseConfig;
@@ -11,36 +10,34 @@ import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.output.MigrateOutput;
 import org.flywaydb.core.api.output.MigrateResult;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import static com.example.associado.constants.ConstantsUtilsTest.APPLICATION_TESTING_PROPERTIE_FILE;
+import static com.example.associado.constants.DatasourceConstantsTest.*;
+import static com.example.associado.constants.FlyWayConstantsTest.*;
 
 @Slf4j
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DatabaseHelper {
+public class DatabaseHelperTest {
 
 	private Connection connection;
 	private DatabaseConnection dbUnit;
 
-	private static final String TESTING_PROPERTIE_FILE = "testing.properties";
-	private static final String FLYWAY_LOCATION = "";
-
-	private static final String DATASOURCE_PROPERTIE_FILE = "datasource.properties";
-	private static final String DRIVER_PROP = "datasource.driver-class-name";
-	private static final String URL_PROP = "datasource.url";
-	private static final String DATABASE_NAME_PROP = "datasource.name";
-	private static final String USERNAME_PROP = "datasource.username";
-	private static final String PASSWORD_PROP = "datasource.password";
-	private static final String SCHEMA_PROP = "datasource.schema";
+	private static final Properties properties = loadProperties(APPLICATION_TESTING_PROPERTIE_FILE);
 
 	@Getter
 	@Setter
@@ -54,14 +51,13 @@ public class DatabaseHelper {
 		private String username;
 		private String password;
 		private String schema;
-//		private String migrations;
 	}
 
-	public static DatabaseHelper getH2Instance() {
+	public static DatabaseHelperTest getH2Instance() {
 		try {
 			Class.forName("org.h2.Driver");
 
-			DatabaseHelper helper = new DatabaseHelper();
+			DatabaseHelperTest helper = new DatabaseHelperTest();
 
 			helper.connection = DriverManager.getConnection("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=ORACLE", "sa", "");
 			helper.dbUnit = new DatabaseConnection(helper.connection);
@@ -76,19 +72,17 @@ public class DatabaseHelper {
 		}
 	}
 
-	public static DatabaseHelper getInstance() {
+	public static DatabaseHelperTest getInstance() {
 		try {
-			DatabaseHelper helper = new DatabaseHelper();
-			Properties dsProperties = helper.loadProperties(DATASOURCE_PROPERTIE_FILE);
-
 			return getInstance(
 				CustomDatasource
 					.builder()
-					.driverClassName(dsProperties.getProperty(DRIVER_PROP))
-					.url(dsProperties.getProperty(URL_PROP))
-					.username(dsProperties.getProperty(USERNAME_PROP))
-					.password(dsProperties.getProperty(PASSWORD_PROP))
-					.schema(dsProperties.getProperty(SCHEMA_PROP))
+					.driverClassName(properties.getProperty(DATASOURCE_DRIVER_CLASS_NAME))
+					.url(properties.getProperty(DATASOURCE_URL))
+					.name(properties.getProperty(DATASOURCE_DATABASE_NAME))
+					.username(properties.getProperty(DATASOURCE_USERNAME))
+					.password(properties.getProperty(DATASOURCE_PASSWORD))
+					.schema(properties.getProperty(DATASOURCE_SCHEMA))
 					.build()
 			);
 		} catch (Exception e) {
@@ -96,46 +90,30 @@ public class DatabaseHelper {
 		}
 	}
 
-	public static DatabaseHelper getInstance(CustomDatasource cds) {
+	public static DatabaseHelperTest getInstance(CustomDatasource cds) {
 		try {
-			DatabaseHelper helper = new DatabaseHelper();
 
 			Class.forName(cds.getDriverClassName());
+
 			Connection connection = DriverManager.getConnection(cds.getUrl(), cds.getUsername(), cds.getPassword());
+			createDatabaseSchema(connection, cds.getSchema());
 
-			try (Statement stmt = connection.createStatement()) {
-				String checkSchemaSql = "SELECT schema_name FROM information_schema.schemata WHERE schema_name = '" + cds.getSchema() + "'";
-				boolean ok = stmt.executeQuery(checkSchemaSql).next();
-				if (!ok) {
-					log.info("Criando schema '{}'", cds.getSchema());
-					int r = stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + cds.getSchema());
-					connection.setSchema(cds.getSchema());
-					log.info("Schema '{}' criado, resposta: '{}'", cds.getSchema(), r);
-				}
-			} catch (Exception e) {
-				//
-			}
-
-			Properties testingProperties = helper.loadProperties(TESTING_PROPERTIE_FILE);
-
-			runFlyWay(testingProperties);
+			runFlyWay();
 
 			DatabaseConnection dbUnit = new DatabaseConnection(connection, cds.getSchema());
 			DatabaseConfig config = dbUnit.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new PostgresqlDataTypeFactory());
 			config.setProperty(DatabaseConfig.FEATURE_QUALIFIED_TABLE_NAMES, true);
 
-			helper.connection = connection;
-			helper.dbUnit = dbUnit;
-			return helper;
+			return new DatabaseHelperTest(connection, dbUnit);
 		} catch (Exception e) {
 			throw new RuntimeException("Erro inicializando DBUnit", e);
 		}
 	}
 
-	public DatabaseHelper execute(String dataset, DatabaseOperation operation) {
+	public DatabaseHelperTest execute(String dataset, DatabaseOperation operation) {
 		try {
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("dataset/" + dataset);
+			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(dataset);
 			if (is == null) {
 				throw new FileNotFoundException("Arquivo dataset não encontrado: " + dataset);
 			}
@@ -151,14 +129,14 @@ public class DatabaseHelper {
 		return this;
 	}
 
-	public DatabaseHelper executeSqlScript(String script) {
+	public DatabaseHelperTest executeSqlScript(String script) {
 		try {
 			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(cleanPath(script));
 			if (is == null) {
 				throw new FileNotFoundException("Arquivo sql não encontrado: " + script);
 			}
 
-			List<String> comandos = this.loadCommandsFromSqlFile(is);
+			List<String> comandos = loadCommandsFromSqlFile(is);
 
 			for (String s : comandos) {
 				if (s != null) {
@@ -174,71 +152,104 @@ public class DatabaseHelper {
 		return this;
 	}
 
+	private static void createDatabaseSchema(Connection connection, String schema) {
+		try (Statement stmt = connection.createStatement()) {
+			String checkSchemaSql = """
+				SELECT schema_name FROM information_schema.schemata
+				WHERE schema_name = '""" + schema + "'";
+
+			boolean ok = stmt.executeQuery(checkSchemaSql).next();
+			if (!ok) {
+				log.info("Criando schema '{}'", schema);
+				int r = stmt.executeUpdate("CREATE SCHEMA IF NOT EXISTS " + schema);
+				connection.setSchema(schema);
+				log.info("Schema '{}' criado, resposta: '{}'", schema, r);
+			}
+		} catch (Exception e) {
+			log.error("Erro criando o Schema '{}'", schema, e);
+		}
+	}
+
 	public void close() {
 		try {
 			dbUnit.close();
 			connection.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error("Erro fechando DBUnit e Connection", e);
 		}
 	}
 
-	private Properties loadProperties(String file) throws IOException {
-		Properties p = new Properties();
-		InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(cleanPath(file));
-		if (in == null) {
-			throw new IOException("Não foi possível carregar o arquivo " + file + " durante o DatabaseHelper: stream nulo");
+	private static Properties loadProperties(String file) {
+		try {
+			Properties p = new Properties();
+			InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(cleanPath(file));
+			if (in == null) {
+				throw new IOException("Não foi possível carregar o arquivo " + file + " durante o DatabaseHelper: stream nulo");
+			}
+			p.load(in);
+			in.close();
+			return p;
+		} catch (Exception e) {
+			throw new RuntimeException("Erro carregando propertie '" + file + "'");
 		}
-		p.load(in);
-		in.close();
-		return p;
 	}
 
 	private static String cleanPath(String path) {
 		return path != null && path.startsWith("/") ? path.substring(1) : path;
 	}
 
-	private static void runFlyWay(Properties properties) {
-		String base = "flyway.";
-		boolean isFlyWayEnabled = Boolean.parseBoolean(properties.getProperty(base + "enabled"));
-		if (!isFlyWayEnabled) {
-			return;
-		}
-
+	private static void runFlyWay() {
 		try {
-			String locations = properties.getProperty(base + "locations");
-			Resource resource = new ClassPathResource(locations);
-			if (!resource.exists()) {
-				throw new RuntimeException("Diretório '" + locations + "' não encontrado!");
+			boolean isFlyWayEnabled = Boolean.parseBoolean(properties.getProperty(FLYWAY_ENABLED));
+			if (!isFlyWayEnabled) {
+				return;
 			}
 
 			log.info("Configurando & Executando Flyway");
+
 			Flyway flyway = Flyway
 				.configure()
 				.dataSource(
-					properties.getProperty(base + "url"),
-					properties.getProperty(base + "user"),
-					properties.getProperty(base + "password")
+					properties.getProperty(FLYWAY_URL),
+					properties.getProperty(FLYWAY_USER),
+					properties.getProperty(FLYWAY_PASSWORD)
 				)
-				.schemas("test")
-				.validateOnMigrate(Boolean.parseBoolean(properties.getProperty(base + "validate-on-migrate")))
-				.failOnMissingLocations(Boolean.parseBoolean(properties.getProperty(base + "fail-on-missing-locations")))
-				.table(properties.getProperty(base + "table"))
-				.sqlMigrationPrefix(properties.getProperty(base + "sql-migration-separator"))
-				.sqlMigrationSeparator(properties.getProperty(base + "sql-migration-prefix"))
-				.encoding(properties.getProperty(base + "encoding"))
-				.connectRetries(Integer.parseInt(properties.getProperty(base + "connect-retries")))
-				.locations("filesystem:" + resource.getFile().getAbsolutePath())
+				.validateOnMigrate(Boolean.parseBoolean(properties.getProperty(FLYWAY_VALIDATE_ON_MIGRATE)))
+				.failOnMissingLocations(Boolean.parseBoolean(properties.getProperty(FLYWAY_FAIL_ON_MISSING_LOCATION)))
+				.table(properties.getProperty(FLYWAY_TABLE))
+				.sqlMigrationPrefix(properties.getProperty(FLYWAY_SQL_MIGRATION_PREFIX))
+				.sqlMigrationSeparator(properties.getProperty(FLYWAY_SQL_MIGRATION_SEPARATOR))
+				.encoding(properties.getProperty(FLYWAY_ENCODING))
+				.connectRetries(Integer.parseInt(properties.getProperty(FLYWAY_CONNECT_RETRIES)))
+				.connectRetriesInterval(Integer.parseInt(properties.getProperty(FLYWAY_CONNECT_RETRIES_INTERVAL)))
+				.locations("filesystem:" + getResourcePath(properties.getProperty(FLYWAY_LOCATIONS)))
 				.load();
 
 			MigrateResult result = flyway.migrate();
 			log.info("Flyway executado");
+
+			for (MigrateOutput migration : result.migrations) {
+				String version = migration.version;
+				String name = migration.description;
+				String ext = migration.type.toLowerCase();
+				log.info(version + "-" + name + "." + ext);
+			}
+
 		} catch (Exception e) {
 			throw new RuntimeException("Erro executando o FlyWay");
 		}
 	}
 
-	private List<String> loadCommandsFromSqlFile(InputStream is) {
+	private static String getResourcePath(String path) throws IOException {
+		Resource resource = new ClassPathResource(path);
+		if (!resource.exists()) {
+			throw new RuntimeException("Diretório '" + path + "' não encontrado!");
+		}
+
+		return resource.getFile().getAbsolutePath();
+	}
+
+	private static List<String> loadCommandsFromSqlFile(InputStream is) {
 		List<String> linhas = new ArrayList<>();
 
 		StringBuilder sb = new StringBuilder();
@@ -254,7 +265,6 @@ public class DatabaseHelper {
 					continue;
 				}
 
-				//TODO: sintaxe de procedure Oracle
 				if (line.startsWith("CREATE FUNCTION")) {
 					isFunction = true;
 					sbFunction.append(line);
@@ -289,9 +299,9 @@ public class DatabaseHelper {
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Erro lendo linhas do script SQL", e);
 		}
-		//silent close resources
+
 		return linhas;
 	}
 }

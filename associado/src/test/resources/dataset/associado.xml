@@ -1,9 +1,9 @@
 <dataset>
 
-	<public.associado uuid="1" documento="17904033089" tipo_pessoa="PF" nome="jose"/>
-	<public.associado uuid="2" documento="58124967067" tipo_pessoa="PF" nome="ana"/>
-	<public.associado uuid="3" documento="50539925098" tipo_pessoa="PF" nome="mario"/>
-	<public.associado uuid="4" documento="38497387000106" tipo_pessoa="PJ"
-										nome="0800 Alimentos LTDA"/>
+	<test.associado uuid="1" documento="17904033089" tipo_pessoa="PF" nome="jose"/>
+	<test.associado uuid="2" documento="58124967067" tipo_pessoa="PF" nome="ana"/>
+	<test.associado uuid="3" documento="50539925098" tipo_pessoa="PF" nome="mario"/>
+	<test.associado uuid="4" documento="38497387000106" tipo_pessoa="PJ"
+									nome="0800 Alimentos LTDA"/>
 
 </dataset>

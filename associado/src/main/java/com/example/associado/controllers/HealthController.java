@@ -2,6 +2,7 @@ package com.example.associado.controllers;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,18 +15,15 @@ import java.util.Map;
 @RequestMapping("/health")
 public class HealthController {
 
-	@Value("${spring.application.name}")
-	private String name;
-
-	@Value("#{environment.getActiveProfiles()}")
-	private String[] profiles;
-
 	@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-	public Object health() {
+	public ResponseEntity<Map<String, Object>> health(
+		@Value("${spring.application.name}") String name,
+		@Value("#{environment.getActiveProfiles()}") String[] profiles
+	) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("name", name);
 		data.put("date", LocalDateTime.now());
 		data.put("profiles", profiles);
-		return data;
+		return ResponseEntity.ok(data);
 	}
 }

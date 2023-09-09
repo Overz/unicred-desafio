@@ -1,5 +1,6 @@
 package com.example.associado;
 
+import com.example.associado.constants.DatasetConstantsTest;
 import org.dbunit.operation.DatabaseOperation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,8 @@ public class ExampleTest extends Assertions {
 
 	@BeforeEach
 	void setup() {
-		DatabaseHelper.getInstance()
-			.execute("associado.xml", DatabaseOperation.CLEAN_INSERT);
+		DatabaseHelperTest.getInstance()
+			.execute(DatasetConstantsTest.ASSOCIADO_DATASET, DatabaseOperation.CLEAN_INSERT);
 	}
 
 	@Test
