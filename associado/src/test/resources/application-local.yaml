@@ -1,0 +1,26 @@
+---
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/associado?currentSchema=test"
+    name: "associado"
+    username: "postgres"
+    password: "postgres"
+    schema: "test"
+
+  rabbitmq:
+    host: "localhost"
+    port: "5672"
+    username: "rabbitmq"
+    password: "rabbitmq"
+
+  flyway:
+    enabled: true
+    user: "postgres"
+    password: "postgres"
+    url: "jdbc:tc:postgresql://localhost:5432/associado?currentSchema=test"
+    driver-class-name: "org.postgresql.Driver"
+    table: "migrations"
+    connect-retries: 3
+    connect-retries-interval: "30s"
+---

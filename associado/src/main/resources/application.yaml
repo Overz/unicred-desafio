@@ -42,7 +42,7 @@ spring:
 
 logging:
   level:
-    com.example: debug
+    com.example.associado: debug
 
 springdoc:
   api-docs:
@@ -51,3 +51,5 @@ springdoc:
     enabled: true
     url: "/swagger.yaml"
     disable-swagger-default-url: true
+
+custom-app-properties:

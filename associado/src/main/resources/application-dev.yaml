@@ -16,18 +16,12 @@ spring:
     livereload:
       enabled: true
   flyway:
-    enabled: "${FLYWAY_ENABLED:false}"
+    enabled: true
     user: "${DATABASE_USERNAME}"
     password: "${DATABASE_PASSWORD}"
     url: "jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
     table: "migrations"
     driver-class-name: "org.postgresql.Driver"
-    sql-migration-separator: "-"
-    sql-migration-prefix: "0"
-    validate-on-migrate: true
-    fail-on-missing-locations: true
-    encoding: UTF-8
-    locations: "classpath:migrations"
     connect-retries: 3
     connect-retries-interval: "30s"
 

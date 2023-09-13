@@ -1,5 +1,7 @@
 # RabbitMQ
 
+> Gerado pelo ChatGPT
+
 ---
 
 ## Como funciona o PUB/SUB do RabbitMQ?
@@ -23,13 +25,14 @@ Nomear uma fila no RabbitMQ é importante por várias razões:
 
 ---
 
-## O que são Topic Exchanges ou Exchange no RabbitMQ?
+## O que são Exchanges no RabbitMQ?
 
 No RabbitMQ, um exchange é um componente central que recebe mensagens dos publishers e as encaminha para as filas. O tipo de exchange determina como as mensagens são roteadas para as filas. Os tipos de exchanges mais comuns são:
 
 - **Direct Exchange**: Roteia mensagens para filas com base em uma chave de roteamento (routing key) exata. A mensagem é entregue a todas as filas cuja chave de roteamento corresponda exatamente à chave definida na mensagem.
 - **Fanout Exchange**: Roteia mensagens para todas as filas associadas a ele. Ignora completamente as chaves de roteamento.
 - **Topic Exchange**: Roteia mensagens com base em padrões de chave de roteamento. As filas são vinculadas a um tópico com uma chave de roteamento que pode conter wildcards (* e #) para corresponder a várias chaves. Isso permite roteamento flexível com base em padrões.
+- **Head Exchange**: ?
 
 ---
 

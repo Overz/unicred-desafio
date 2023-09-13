@@ -1,27 +1,24 @@
 package com.example.associado.services;
 
-import com.example.associado.DatabaseHelperTest;
-import com.example.associado.constants.DatasetConstantsTest;
 import com.example.associado.mocks.AssociadoMockTest;
 import com.example.associado.models.Associado;
 import com.example.associado.repositories.AssociadoRepository;
-import com.example.common.constants.ProfilesConstants;
-import org.dbunit.operation.DatabaseOperation;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
-@SpringBootTest
-@ActiveProfiles({ProfilesConstants.INTEGRATION_TEST})
-@TestPropertySource({"classpath:integration-test.properties"})
-public class AssociadoServiceIntegrationTest extends Assertions {
+@SpringBootTest(
+	properties = {
+		"spring.datasource.url=jdbc:tc:postgresql:latest://associado",
+		"spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration"
+	}
+)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class AssociadoServiceIntegrationTest extends Assertions {
 
 	@Autowired
 	AssociadoService service;
@@ -31,12 +28,15 @@ public class AssociadoServiceIntegrationTest extends Assertions {
 
 	@BeforeEach
 	void setup() {
-		DatabaseHelperTest
-			.getInstance()
-			.execute(DatasetConstantsTest.ASSOCIADO_DATASET, DatabaseOperation.CLEAN_INSERT);
+	}
+
+	@AfterEach
+	void clean() {
+		repo.deleteAll();
 	}
 
 	@Test
+	@Sql("classpath:sql/setup.sql")
 	@DisplayName("deve cadastar um novo associado")
 	void criarAssociadoIntegrationTest() {
 		Associado mock = AssociadoMockTest.getAssociado();
@@ -56,5 +56,23 @@ public class AssociadoServiceIntegrationTest extends Assertions {
 		assertEquals(associado.getDocumento(), persisted.getDocumento());
 		assertEquals(associado.getTipo_pessoa(), persisted.getTipo_pessoa());
 		assertEquals(associado.getNome(), persisted.getNome());
+	}
+
+	@Test
+	@Sql("classpath:sql/setup.sql")
+	@DisplayName("deve atualizar um associado")
+	void atualizrAssociadoIntegrationTest() {
+		Optional<Associado> opt = repo.consultarPorCpfCnpj(AssociadoMockTest.DOC_1);
+
+		assertTrue(opt.isPresent());
+
+		Associado associado = opt.get();
+		assertEquals(AssociadoMockTest.DOC_1, associado.getDocumento());
+
+		final String cpf = "01234567890";
+		associado.setDocumento(cpf);
+
+		associado = service.atualizarAssociado(AssociadoMockTest.DOC_1, associado);
+		assertEquals(cpf, associado.getDocumento());
 	}
 }
