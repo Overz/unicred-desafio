@@ -24,8 +24,8 @@ public abstract class EventHelpers {
 	 * @param o        Objeto enviado
 	 * @return Mensagem serializada
 	 */
-	public static String toMessage(String subject, Integer sequence, Object o) {
-		MessageStreaming m = new MessageStreaming();
+	public static <T> String toMessage(String subject, Integer sequence, T o) {
+		MessageStreaming<T> m = new MessageStreaming<>();
 		m.setData(o);
 		m.setTime(System.currentTimeMillis());
 
@@ -40,7 +40,7 @@ public abstract class EventHelpers {
 		return MapperUtils.toJson(m);
 	}
 
-	public static MessageStreaming fromMessage(String message) {
+	public static <T> MessageStreaming<T> fromMessage(String message) {
 		return MapperUtils.fromJson(message, MessageStreaming.class);
 	}
 }

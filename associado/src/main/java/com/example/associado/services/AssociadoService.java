@@ -33,12 +33,12 @@ public class AssociadoService {
 		return repo.save(o);
 	}
 
-	public Associado atualizarAssociado(String cpfcnpj, Associado o) {
-		if (CpfCnpj.isInvalid(o.getDocumento())) {
+	public Associado atualizarAssociado(String cpfcnpj, Associado novo) {
+		if (CpfCnpj.isInvalid(novo.getDocumento())) {
 			throw new BadRequestError("CPF/CNPJ não aceito!");
 		}
 
-		Associado example = Associado.builder().documento(o.getDocumento()).build();
+		Associado example = Associado.builder().documento(novo.getDocumento()).build();
 
 		long count = repo.count(Example.of(example));
 		if (count > 0) {
@@ -53,9 +53,9 @@ public class AssociadoService {
 		}
 
 		Associado associado = data.get();
-		associado.setNome(o.getNome());
-		associado.setDocumento(o.getDocumento());
-		associado.setTipo_pessoa(o.getTipo_pessoa());
+		associado.setNome(novo.getNome());
+		associado.setDocumento(novo.getDocumento());
+		associado.setTipo_pessoa(novo.getTipo_pessoa());
 
 		return repo.save(associado);
 	}

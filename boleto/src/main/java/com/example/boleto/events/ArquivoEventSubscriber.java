@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Map;
 
 import static com.example.common.events.Events.ARQUIVO_PROCESSADO_QUEUE;
 
@@ -22,51 +23,51 @@ import static com.example.common.events.Events.ARQUIVO_PROCESSADO_QUEUE;
 @Component
 public class ArquivoEventSubscriber {
 
-	@Autowired
-	private BoletoEventPublisher publisher;
+  @Autowired
+  private BoletoEventPublisher publisher;
 
-	@Autowired
-	private BoletoService service;
+  @Autowired
+  private BoletoService service;
 
-	@Value("${custom.boleto.vencimento}")
-	private Long vencimentoPadrao;
+  @Value("${custom.boleto.vencimento}")
+  private Long vencimentoPadrao;
 
-	@Transactional
-	@RabbitListener(queues = {ARQUIVO_PROCESSADO_QUEUE})
-	public String arquivoProcessadoEvent(String msg) {
-		log.info("Message received <{}>", msg);
+  @Transactional
+  @RabbitListener(queues = {ARQUIVO_PROCESSADO_QUEUE})
+  public String arquivoProcessadoEvent(String msg) {
+    log.info("Message received <{}>", msg);
 
-		try {
-			MessageStreaming messageStreaming = MapperUtils.fromJson(msg, MessageStreaming.class);
-			ArquivoEventDTO arquivoEventDTO = MapperUtils.convert(messageStreaming.getData(), ArquivoEventDTO.class);
+    try {
+      MessageStreaming<Map<String, Object>> messageStreaming = MapperUtils.fromJson(msg, MessageStreaming.class);
+      ArquivoEventDTO arquivoEventDTO = MapperUtils.convert(messageStreaming.getData(), ArquivoEventDTO.class);
 
-			BoletoEventDTO boletoEventDTO = new BoletoEventDTO();
-			boletoEventDTO.setDocumento_pagador(arquivoEventDTO.getDocumento().substring(3, 14).trim());
+      BoletoEventDTO boletoEventDTO = new BoletoEventDTO();
+      boletoEventDTO.setDocumento_pagador(arquivoEventDTO.getDocumento().substring(3, 14).trim());
 
-			String message = EventHelpers.toMessage(Events.BOLETO_CONSULTAR_ASSOCIADO_POR_CPFCNPJ_SUBJECT, boletoEventDTO);
-			messageStreaming = publisher.exchange(Events.BOLETO_CONSULTAR_ASSOCIADO_ROUTING_KEY, message);
-			if (messageStreaming.getData() == null) {
-				return "";
-			}
+      String message = EventHelpers.toMessage(Events.BOLETO_CONSULTAR_ASSOCIADO_POR_CPFCNPJ_SUBJECT, boletoEventDTO);
+      messageStreaming = publisher.exchange(Events.BOLETO_CONSULTAR_ASSOCIADO_ROUTING_KEY, message);
+      if (messageStreaming.getData() == null) {
+        return "";
+      }
 
-			AssociadoEventDTO associadoEventDTO = MapperUtils.convert(messageStreaming.getData(), AssociadoEventDTO.class);
+      AssociadoEventDTO associadoEventDTO = MapperUtils.convert(messageStreaming.getData(), AssociadoEventDTO.class);
 
-			Boleto boleto = Boleto
-				.builder()
-				.uuid(arquivoEventDTO.getId() + associadoEventDTO.getUuid())
-				.documento_pagador(arquivoEventDTO.getDocumento())
-				.valor(new BigDecimal(arquivoEventDTO.getValor()))
-				.uuid_associado(associadoEventDTO.getUuid())
-				.nome_pagador(associadoEventDTO.getNome())
-				.vencimento(LocalDateTime.now().plusDays(vencimentoPadrao))
-				.situacao(BoletoConstants.PENDENTE)
-				.build();
+      Boleto boleto = Boleto
+          .builder()
+          .uuid(arquivoEventDTO.getId() + associadoEventDTO.getUuid())
+          .documento_pagador(arquivoEventDTO.getDocumento())
+          .valor(new BigDecimal(arquivoEventDTO.getValor()))
+          .uuid_associado(associadoEventDTO.getUuid())
+          .nome_pagador(associadoEventDTO.getNome())
+          .vencimento(LocalDateTime.now().plusDays(vencimentoPadrao))
+          .situacao(BoletoConstants.PENDENTE)
+          .build();
 
-			service.criarBoleto(boleto);
+      service.criarBoleto(boleto);
 
-			return EventHelpers.toMessage(Collections.singletonMap("ok", true));
-		} catch (Exception e) {
-			return EventHelpers.toMessage(null);
-		}
-	}
+      return EventHelpers.toMessage(Collections.singletonMap("ok", true));
+    } catch (Exception e) {
+      return EventHelpers.toMessage(null);
+    }
+  }
 }

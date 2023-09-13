@@ -1,75 +1,88 @@
 package com.example.common.events;
 
+import com.example.common.mappers.MapperUtils;
+
 import java.util.Objects;
 
-public class MessageStreaming {
+public class MessageStreaming<T> {
 
-	private String subject;
-	private Long time;
-	private Integer sequence;
-	private Object data;
+  private String subject;
+  private Long time;
+  private Integer sequence;
+  private T data;
 
-	public MessageStreaming() {
-	}
+  public static MessageStreaming cast(String message) {
+    return MapperUtils.fromJson(message, MessageStreaming.class);
+  }
 
-	public MessageStreaming(String subject, Long time, Integer sequence, Object data) {
-		this.subject = subject;
-		this.time = time;
-		this.sequence = sequence;
-		this.data = data;
-	}
+  public static <T> MessageStreaming convert(String message, Class<T> cls) {
+    MessageStreaming self = MapperUtils.fromJson(message, MessageStreaming.class);
+    T t = MapperUtils.convert(self.getData(), cls);
+    self.setData(t);
+    return self;
+  }
 
-	public String getSubject() {
-		return subject;
-	}
+  public MessageStreaming() {
+  }
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
+  public MessageStreaming(String subject, Long time, Integer sequence, T data) {
+    this.subject = subject;
+    this.time = time;
+    this.sequence = sequence;
+    this.data = data;
+  }
 
-	public Long getTime() {
-		return time;
-	}
+  public String getSubject() {
+    return subject;
+  }
 
-	public void setTime(Long time) {
-		this.time = time;
-	}
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
-	public Integer getSequence() {
-		return sequence;
-	}
+  public Long getTime() {
+    return time;
+  }
 
-	public void setSequence(Integer sequence) {
-		this.sequence = sequence;
-	}
+  public void setTime(Long time) {
+    this.time = time;
+  }
 
-	public Object getData() {
-		return data;
-	}
+  public Integer getSequence() {
+    return sequence;
+  }
 
-	public void setData(Object data) {
-		this.data = data;
-	}
+  public void setSequence(Integer sequence) {
+    this.sequence = sequence;
+  }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof MessageStreaming that)) return false;
-		return Objects.equals(getSubject(), that.getSubject()) && Objects.equals(getTime(), that.getTime()) && Objects.equals(getSequence(), that.getSequence()) && Objects.equals(getData(), that.getData());
-	}
+  public T getData() {
+    return data;
+  }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(getSubject(), getTime(), getSequence(), getData());
-	}
+  public void setData(T data) {
+    this.data = data;
+  }
 
-	@Override
-	public String toString() {
-		return "MessageStreaming{" +
-			"subject='" + subject + '\'' +
-			", time=" + time +
-			", sequence=" + sequence +
-			", data=" + data +
-			'}';
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof MessageStreaming that)) return false;
+    return Objects.equals(getSubject(), that.getSubject()) && Objects.equals(getTime(), that.getTime()) && Objects.equals(getSequence(), that.getSequence()) && Objects.equals(getData(), that.getData());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getSubject(), getTime(), getSequence(), getData());
+  }
+
+  @Override
+  public String toString() {
+    return "MessageStreaming{" +
+        "subject='" + subject + '\'' +
+        ", time=" + time +
+        ", sequence=" + sequence +
+        ", data=" + data +
+        '}';
+  }
 }

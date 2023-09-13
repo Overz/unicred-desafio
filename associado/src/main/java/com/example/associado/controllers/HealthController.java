@@ -15,6 +15,9 @@ import java.util.Map;
 @RequestMapping("/health")
 public class HealthController {
 
+//	@Autowired
+//	private AssociadoService service;
+
 	@GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<Map<String, Object>> health(
 		@Value("${spring.application.name}") String name,
@@ -24,6 +27,10 @@ public class HealthController {
 		data.put("name", name);
 		data.put("date", LocalDateTime.now());
 		data.put("profiles", profiles);
+
+		// Associado associado = service.consultarPorId("123");
+		// data.put("associado", associado);
+
 		return ResponseEntity.ok(data);
 	}
 }
