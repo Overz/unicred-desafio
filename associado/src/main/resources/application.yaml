@@ -38,7 +38,14 @@ spring:
     livereload:
       enabled: false
   flyway:
-    enabled: false
+    enabled: true
+    user: "${DATABASE_USERNAME}"
+    password: "${DATABASE_PASSWORD}"
+    url: "jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
+    table: "migrations"
+    driver-class-name: "org.postgresql.Driver"
+    connect-retries: 3
+    connect-retries-interval: "30s"
 
 logging:
   level:

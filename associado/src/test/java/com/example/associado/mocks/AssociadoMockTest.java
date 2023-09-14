@@ -2,6 +2,8 @@ package com.example.associado.mocks;
 
 import com.example.associado.models.Associado;
 
+import java.util.List;
+
 import static com.example.common.constants.AssociadoConstants.PESSOA_FISICA;
 import static com.example.common.generators.Nanoid.nanoid;
 
@@ -25,5 +27,9 @@ public abstract class AssociadoMockTest {
         .documento("08696286073")
         .tipo_pessoa(PESSOA_FISICA)
         .build();
+  }
+
+  public static List<Associado> getAssociadoList() {
+    return List.of(getAssociado());
   }
 }
