@@ -37,10 +37,6 @@ public class DatabaseHelperTest {
   private Connection connection;
   private DatabaseConnection dbUnit;
 
-  static {
-    PropertiesTest.load(DEFAULT_FILE);
-  }
-
   @Getter
   @Setter
   @Builder

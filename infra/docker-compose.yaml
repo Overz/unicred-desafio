@@ -1,6 +1,8 @@
 version: '3.9'
 
 services:
+#  https://hub.docker.com/_/sonarqube
+
   rabbitmq:
     image: rabbitmq:3.12-management
     restart: always

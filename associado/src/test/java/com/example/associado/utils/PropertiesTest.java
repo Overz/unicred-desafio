@@ -17,11 +17,15 @@ public abstract class PropertiesTest {
 
 	private static final Properties properties = new Properties();
 
-	private static Properties load() {
-		return load(DEFAULT_FILE);
+	static {
+		load();
 	}
 
-	public static Properties load(String path) {
+	private static void load() {
+		load(DEFAULT_FILE);
+	}
+
+	public static void load(String path) {
 		try {
 			path = path.startsWith("/") ? path.substring(1) : path;
 			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
@@ -35,8 +39,6 @@ public abstract class PropertiesTest {
 		} catch (Exception e) {
 			throw new RuntimeException("Erro carregando propriedades do arquivo '" + path + "'");
 		}
-
-		return properties;
 	}
 
 	private static Map<String, Object> getFlattenedMap(Map<String, Object> source) {

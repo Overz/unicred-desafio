@@ -1,5 +1,6 @@
 package com.example.associado.services;
 
+import com.example.associado.config.AbstractContainersTest;
 import com.example.associado.matchers.ErrorMatcher;
 import com.example.associado.mocks.AssociadoMockTest;
 import com.example.associado.models.Associado;
@@ -15,13 +16,15 @@ import org.springframework.test.context.jdbc.Sql;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest(
-    properties = {
-        "spring.datasource.url=jdbc:tc:postgresql:latest://associado"
-    }
+//    properties = {
+//        "spring.datasource.url=jdbc:tc:postgresql:latest://associado"
+//    }
 )
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class AssociadoServiceIntegrationTest extends Assertions {
+class AssociadoServiceIntegrationTest extends AbstractContainersTest {
 
   @Autowired
   AssociadoService service;

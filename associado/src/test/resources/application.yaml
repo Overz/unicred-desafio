@@ -5,3 +5,8 @@ spring:
     name: "associado-tests"
   main:
     banner-mode: off
+
+logging:
+  file:
+    name: "${logging.file.path}/${START_TIME}.log"
+    path: "tmp/logs/${spring.application.name}/tests"
