@@ -1,7 +1,24 @@
 version: '3.9'
 
 services:
-#  https://hub.docker.com/_/sonarqube
+  associado:
+    build:
+      context: ./associado
+      dockerfile: Dockerfile
+    hostname: associado-srv
+    restart: no
+    depends_on:
+      - postgres
+      - rabbitmq
+    env_file:
+      - infra/envs/.env
+      - infra/envs/associado.env
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    networks:
+      app:
 
   rabbitmq:
     image: rabbitmq:3.12-management
@@ -37,7 +54,7 @@ services:
       - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./postgres/:/docker-entrypoint-initdb.d/
+      - infra/postgres/:/docker-entrypoint-initdb.d/
     networks:
       app:
 

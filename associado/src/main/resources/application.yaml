@@ -1,7 +1,7 @@
 debug: false
 
 server:
-  port: "${PORT:3000}"
+  port: "${PORT}"
   shutdown: graceful
   servlet:
     context-path: ""

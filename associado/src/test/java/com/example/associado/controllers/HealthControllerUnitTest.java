@@ -1,11 +1,9 @@
 package com.example.associado.controllers;
 
+import com.example.associado.SetupTests;
 import com.example.associado.mocks.AssociadoMockTest;
 import com.example.associado.models.Associado;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,6 +22,11 @@ public class HealthControllerUnitTest extends Assertions {
 //	AssociadoService service;
 
 	Associado associadoMock;
+
+	@BeforeAll
+	static void init() {
+		SetupTests.setupProperties();
+	}
 
 	@BeforeEach
 	void setup() {

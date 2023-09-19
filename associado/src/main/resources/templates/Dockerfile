@@ -1,12 +1,11 @@
 FROM openjdk:17-slim
 
-ENV PORT="3000"
 ENV WORKDIR="/app"
 ENV TZ="America/Sao_Paulo"
 ENV JAVA_OPTS=""
-ENV APP_NAME="associado"
-ENV APP_VERSION="0.0.1"
-ENV APP_DESCRIPTION="Criação de associados"
+ENV APP_NAME="@project.name@"
+ENV APP_VERSION="@project.version@"
+ENV APP_DESCRIPTION="@project.description@"
 ENV APP_LOGS="${WORKDIR}/logs"
 ENV JAR="${APP_NAME}-${APP_VERSION}.jar"
 
@@ -18,6 +17,6 @@ WORKDIR ${WORKDIR}
 
 ADD target/*.jar ${WORKDIR}/
 
-EXPOSE ${PORT}
+EXPOSE 8080
 
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -jar ${WORKDIR}/${JAR}" ]

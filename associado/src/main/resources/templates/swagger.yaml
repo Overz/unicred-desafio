@@ -1,13 +1,13 @@
 openapi: "3.0.3"
 
 info:
-  title: "associado"
+  title: "@project.name@"
   description: |
-    Criação de associados
-  version: "0.0.1"
+    @project.description@
+  version: "@project.version@"
   contact:
-    name: "My Organization"
-    email: "contact@domain.com"
+    name: "@organization.name@"
+    email: "@organization.url@"
 
 servers:
   - url: "http://localhost:3000"

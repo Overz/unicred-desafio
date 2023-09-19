@@ -1,6 +1,7 @@
 package com.example.associado.controllers;
 
 
+import com.example.associado.SetupTests;
 import com.example.associado.events.AssociadoEventPublisher;
 import com.example.associado.mocks.AssociadoMockTest;
 import com.example.associado.models.Associado;
@@ -43,6 +44,11 @@ public class AssociadoControllerIntegrationTest extends Assertions {
 
   @Autowired
   MockMvc mvc;
+
+	@BeforeAll
+	static void init() {
+		SetupTests.setupProperties();
+	}
 
   @Nested
   class CriarAssociado {

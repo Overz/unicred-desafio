@@ -1,7 +1,10 @@
 .idea
 .mvn
-target
+tmp
 .editorconfig
 .env
 Dockerfile
 *.md
+*.iml
+mvnw
+mvnw.cmd

@@ -42,7 +42,6 @@ public abstract class AbstractContainersTest {
 
   @BeforeAll
   static void init() {
-		System.setProperty("START_TIME", "" + System.currentTimeMillis());
     runContainers();
   }
 
@@ -75,16 +74,4 @@ public abstract class AbstractContainersTest {
     postgres.stop();
     rabbitmq.stop();
   }
-
-//	public static class Init implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-//
-//		@Override
-//		public void initialize(ConfigurableApplicationContext ctx) {
-//			TestPropertyValues.of(
-//				DATASOURCE_URL + "=" + postgres.getJdbcUrl(),
-//				DATASOURCE_USERNAME + "=" + postgres.getUsername(),
-//				DATASOURCE_PASSWORD + "=" + postgres.getPassword()
-//			).applyTo(ctx.getEnvironment());
-//		}
-//	}
 }

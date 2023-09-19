@@ -6,5 +6,6 @@ docker-compose down
 
 docker volume rm unicred-postgres --force
 docker volume rm unicred-rabbitmq --force
+docker volume rm unicred-sonarqube --force
 
 docker-compose up
