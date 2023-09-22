@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     controllers = {HealthController.class}
 )
 @AutoConfigureMockMvc
-public class HealthControllerIntegrationTest {
+class HealthControllerIntegrationTest {
 
   @Value("${spring.application.name}")
   String appName;

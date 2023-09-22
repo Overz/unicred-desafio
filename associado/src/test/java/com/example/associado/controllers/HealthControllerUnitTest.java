@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Map;
 
 @ExtendWith({MockitoExtension.class})
-public class HealthControllerUnitTest extends Assertions {
+class HealthControllerUnitTest extends Assertions {
 
 	@InjectMocks
 	HealthController ctrl;

@@ -10,3 +10,5 @@ logging:
   file:
     name: "${logging.file.path}/${START_TIME}.log"
     path: "tmp/logs/${spring.application.name}/tests"
+  level:
+    org.springframework: off

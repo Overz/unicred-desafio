@@ -34,6 +34,7 @@ spring:
     password: "${RABBITMQ_PASSWORD}"
     template:
       reply-timeout: "${RABBITMQ_REPLY_TIMEOUT}"
+      receive-timeout: "${RABBITMQ_RECEIVE_TIMEOUT}"
   devtools:
     livereload:
       enabled: false

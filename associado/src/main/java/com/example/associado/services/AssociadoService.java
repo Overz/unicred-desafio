@@ -5,6 +5,7 @@ import com.example.associado.repositories.AssociadoRepository;
 import com.example.common.errors.BadRequestError;
 import com.example.common.errors.NotFoundError;
 import com.example.common.validations.CpfCnpj;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.repository.query.FluentQuery;
@@ -15,10 +16,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AssociadoService {
-
-	@Autowired
-	private AssociadoRepository repo;
+	private final AssociadoRepository repo;
 
 	public Associado criarAssociado(Associado o) {
 		if (CpfCnpj.isInvalid(o.getDocumento())) {

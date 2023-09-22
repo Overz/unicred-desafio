@@ -3,6 +3,8 @@ package com.example.associado.events;
 import com.example.common.events.EventHelpers;
 import com.example.common.events.MessageStreaming;
 import com.example.common.events.Publisher;
+import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -13,14 +15,13 @@ import static com.example.common.events.Events.ASSOCIADO_EXCHANGE;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class AssociadoEventPublisher extends EventHelpers implements Publisher {
-
 	private final RabbitTemplate template;
 
-	@Autowired
-	public AssociadoEventPublisher(RabbitTemplate template) {
-		template.setExchange(ASSOCIADO_EXCHANGE);
-		this.template = template;
+	@PostConstruct
+	private void post() {
+		this.template.setExchange(ASSOCIADO_EXCHANGE);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.example.associado.config;
 
 import com.example.common.events.Events;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -11,7 +12,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-public abstract class AbstractContainersTest {
+public abstract class AbstractContainersTest extends Assertions {
 
   @Container
   public static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");

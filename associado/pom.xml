@@ -180,13 +180,12 @@
 				<configuration>
 					<excludes>
 						<exclude>**/Main*</exclude>
-						<exclude>**/Main*.java</exclude>
-						<exclude>**/*Test*.java</exclude>
-						<exclude>**/*Publisher*.java</exclude>
-						<exclude>**/MessageController.java</exclude>
+						<exclude>**/*Test*</exclude>
 						<exclude>**/config/*</exclude>
+						<exclude>**/controllers/MessageController*</exclude>
 						<exclude>**/dto/*</exclude>
 						<exclude>**/errors/*</exclude>
+						<exclude>**/events/*EventPublisher*</exclude>
 						<exclude>**/models/*</exclude>
 						<exclude>**/repositories/*</exclude>
 					</excludes>

@@ -10,6 +10,7 @@ import com.example.common.events.Events;
 import com.example.common.events.MessageStreaming;
 import com.example.common.mappers.MapperUtils;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,13 +25,10 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/associado")
+@AllArgsConstructor
 public class AssociadoController {
-
-	@Autowired
-	private AssociadoService service;
-
-	@Autowired
-	private AssociadoEventPublisher publisher;
+	private final AssociadoService service;
+	private final AssociadoEventPublisher publisher;
 
 	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<AssociadoDTO> criarAssociado(@RequestBody @Valid AssociadoDTO dto) {

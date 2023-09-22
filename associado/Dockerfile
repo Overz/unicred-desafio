@@ -1,6 +1,5 @@
 FROM openjdk:17-slim
 
-ENV PORT="3000"
 ENV WORKDIR="/app"
 ENV TZ="America/Sao_Paulo"
 ENV JAVA_OPTS=""
@@ -18,6 +17,6 @@ WORKDIR ${WORKDIR}
 
 ADD target/*.jar ${WORKDIR}/
 
-EXPOSE ${PORT}
+EXPOSE 8080
 
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -jar ${WORKDIR}/${JAR}" ]
