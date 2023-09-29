@@ -7,6 +7,9 @@ HELP.md
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+*.gz
+*.tar.gz
+*.zip
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

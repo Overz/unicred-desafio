@@ -45,7 +45,7 @@ class BoletoEventSubscriberTest extends Assertions {
 	}
 
 	AssociadoEventDTO send(String subject) {
-		String message = subscriber.receiveMessage(toMessage(subject, event));
+		String message = subscriber.handler(toMessage(subject, event));
 		MessageStreaming<?> streaming = fromMessage(message);
 		return MapperUtils.convert(streaming.getData(), AssociadoEventDTO.class);
 	}

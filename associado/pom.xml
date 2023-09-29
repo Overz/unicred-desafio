@@ -31,6 +31,8 @@
 		<path.test.resources>${project.basedir}/src/test/resources</path.test.resources>
 		<path.templates>${path.main.resources}/templates</path.templates>
 		<path.static>${path.main.resources}/static</path.static>
+
+		<micrometer.version>1.11.4</micrometer.version>
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/io.github.cdimascio/java-dotenv -->
@@ -80,7 +82,20 @@
 			<groupId>org.awaitility</groupId>
 			<artifactId>awaitility</artifactId>
 			<version>4.2.0</version>
+			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${micrometer.version}</version>
+		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>io.micrometer</groupId>-->
+<!--			<artifactId>micrometer-registry-graphite</artifactId>-->
+<!--			<version>${micrometer.version}</version>-->
+<!--		</dependency>-->
 
 		<!-- AUTO GERADO -->
 		<dependency>

@@ -20,6 +20,10 @@ public class MapperUtils {
 		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 	}
 
+	public static ObjectMapper getMaper() {
+		return objectMapper;
+	}
+
 	public static synchronized <T> T fromJson(String stringJson, Class<T> target) {
 		try {
 			return objectMapper.readValue(stringJson, target);

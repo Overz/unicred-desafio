@@ -7,18 +7,24 @@ services:
       dockerfile: Dockerfile
     hostname: associado-srv
     restart: no
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '200MB'
     depends_on:
       - postgres
       - rabbitmq
     env_file:
-      - infra/envs/.env
-      - infra/envs/associado.env
+      - ./infra/envs/.env
+      - ./infra/envs/associado.env
     expose:
       - '3000'
     ports:
       - '3000:3000'
-    networks:
-      app:
+    network_mode: host
+#    networks:
+#      app:
 
   rabbitmq:
     image: rabbitmq:3.12-management
@@ -28,6 +34,11 @@ services:
       RABBITMQ_DEFAULT_USER: "rabbitmq"
       RABBITMQ_DEFAULT_PASS: "rabbitmq"
       TZ: America/Sao_Paulo
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: '300MB'
     expose:
       - '5672:5672'
       - '15672:15672'
@@ -36,8 +47,9 @@ services:
       - '15672:15672'
     volumes:
       - rabbitmq:/var/lib/rabbitmq
-    networks:
-      app:
+    network_mode: host
+#    networks:
+#      app:
 
   postgres:
     image: postgres:latest
@@ -48,15 +60,21 @@ services:
       POSTGRES_MULTIPLE_DATABASES: associado,boleto,arquivo
       TZ: America/Sao_Paulo
       POSTGRES_TZDATA: /usr/share/zoneinfo/America/Sao_Paulo
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '1200MB'
     expose:
       - '5432'
     ports:
       - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
-      - infra/postgres/:/docker-entrypoint-initdb.d/
-    networks:
-      app:
+      - ./infra/postgres/:/docker-entrypoint-initdb.d/
+    network_mode: host
+#    networks:
+#      app:
 
   adminer:
     image: adminer:latest
@@ -64,18 +82,46 @@ services:
     hostname: adm-srv
     environment:
       ADMINER_DEFAULT_SERVER: postgres-srv
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: '15MB'
     ports:
       - '8080:8080'
     expose:
       - '8080'
-    networks:
-      app:
+    network_mode: host
+#    networks:
+#      app:
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    restart: always
+    hostname: prometheus-srv
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+          memory: '50MB'
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus:/prometheus
+    ports:
+      - '9090:9090'
+    expose:
+      - '9090'
+    network_mode: host
+#    networks:
+#      app:
 
 volumes:
   postgres:
     name: 'unicred-postgres'
   rabbitmq:
     name: 'unicred-rabbitmq'
+  prometheus:
+    name: 'unicred-prometheus'
 
-networks:
-  app:
+#networks:
+#  app:

@@ -5,21 +5,20 @@ import com.example.associado.services.AssociadoService;
 import com.example.common.events.*;
 import com.example.common.mappers.MapperUtils;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static com.example.common.events.Events.BOLETO_CONSULTAR_ASSOCIADO_QUEUE;
 
-@Slf4j
+@Log4j2
 @Component
 @AllArgsConstructor
 public class BoletoEventSubscriber {
 	private final AssociadoService service;
 
 	@RabbitListener(queues = {BOLETO_CONSULTAR_ASSOCIADO_QUEUE})
-	public String receiveMessage(String msg) {
+	public String handler(String msg) {
 		log.info("Message received <{}>", msg);
 
 		try {

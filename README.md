@@ -87,9 +87,8 @@ springdoc:
 
 ## Testes
 
-Apenas **`Teste de integração`** estão sendo feitos na aplicação, para ter acesso ao relatório de coverage
-execute o comando `mvn jacoco:report` em cada serviço para que um relatório com `JaCoCo` seja gerado dentro
-da pasta `target/site/jacoco/index.html` de cada serviço.
+Para ter acesso ao relatório de coverage execute o comando `mvn clean test jacoco:report` em cada serviço para que um
+relatório com `JaCoCo` seja gerado dentro da pasta `target/site/jacoco/index.html` de cada serviço.
 
 - Minimo: 0.7 (70%)
 

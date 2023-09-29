@@ -21,4 +21,6 @@ logging:
   file:
     name: "${logging.file.path}/dev/${START_TIME}.log"
     path: "@project.basedir@/tmp/logs/${spring.application.name}/@project.version@"
+  level:
+    com.example.associado: debug
 ---
