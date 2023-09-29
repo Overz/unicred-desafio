@@ -4,10 +4,10 @@ import com.example.common.constants.ProfilesConstants;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.context.annotation.Profile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,8 +25,12 @@ public class Main {
 		SpringApplication.run(Main.class, args);
 	}
 
-	@Profile(ProfilesConstants.DEV)
 	private static void env() {
+		String[] profiles = new String[]{System.getProperty("SPRING_PROFILES_ACTIVE")};
+		if (!ArrayUtils.contains(profiles, ProfilesConstants.DEV)) {
+			return;
+		}
+
 		String root = System.getProperty("user.dir");
 		Path path = Paths.get(root, "associado");
 
