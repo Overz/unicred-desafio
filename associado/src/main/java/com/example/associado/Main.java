@@ -3,7 +3,6 @@ package com.example.associado;
 import com.example.common.constants.ProfilesConstants;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,11 +25,6 @@ public class Main {
 	}
 
 	private static void env() {
-		String[] profiles = new String[]{System.getProperty("SPRING_PROFILES_ACTIVE")};
-		if (!ArrayUtils.contains(profiles, ProfilesConstants.DEV)) {
-			return;
-		}
-
 		String root = System.getProperty("user.dir");
 		Path path = Paths.get(root, "associado");
 
@@ -44,6 +38,17 @@ public class Main {
 		}
 
 		log.info("Carregando .env no diretorio '{}'", project);
-		Dotenv.configure().directory(project).systemProperties().ignoreIfMissing().load();
+		Dotenv dotenv = Dotenv.configure().directory(project).ignoreIfMissing().load();
+		String activeProfiles = dotenv.get("SPRING_PROFILES_ACTIVE");
+		if (activeProfiles == null || activeProfiles.isEmpty()) {
+			return;
+		}
+
+		String[] profiles = activeProfiles.split(",");
+		if (!ArrayUtils.contains(profiles, ProfilesConstants.DEV)) {
+			return;
+		}
+
+		dotenv.entries().forEach(e -> System.setProperty(e.getKey(), e.getValue()));
 	}
 }

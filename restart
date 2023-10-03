@@ -7,5 +7,7 @@ docker-compose down
 docker volume rm unicred-postgres --force
 docker volume rm unicred-rabbitmq --force
 docker volume rm unicred-prometheus --force
+docker volume rm unicred-loki --force
+docker volume rm unicred-promtail --force
 
-docker-compose up rabbitmq postgres adminer prometheus
+docker-compose up

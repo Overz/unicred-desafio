@@ -1,39 +1,47 @@
 version: '3.9'
 
+volumes:
+  postgres:
+    name: 'unicred-postgres'
+  rabbitmq:
+    name: 'unicred-rabbitmq'
+  prometheus:
+    name: 'unicred-prometheus'
+  grafana:
+    name: 'unicred-grafana'
+  loki:
+    name: 'unicred-loki'
+  promtail:
+    name: 'unicred-promtail'
+
 services:
-  associado:
-    build:
-      context: ./associado
-      dockerfile: Dockerfile
-    hostname: associado-srv
-    restart: no
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: '200MB'
-    depends_on:
-      - postgres
-      - rabbitmq
-    env_file:
-      - ./infra/envs/.env
-      - ./infra/envs/associado.env
-    expose:
-      - '3000'
-    ports:
-      - '3000:3000'
-    network_mode: host
-#    networks:
-#      app:
+#  associado:
+#    build:
+#      context: ./associado
+#      dockerfile: Dockerfile
+#    hostname: associado-srv
+#    restart: no
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.1'
+#          memory: '200MB'
+#    depends_on:
+#      - postgres
+#      - rabbitmq
+#      - prometheus
+#      - grafana
+#    env_file:
+#      - ./infra/envs/.env
+#      - ./infra/envs/associado.env
+#    network_mode: host
 
   rabbitmq:
     image: rabbitmq:3.12-management
     restart: always
     hostname: rabbitmq-srv
-    environment:
-      RABBITMQ_DEFAULT_USER: "rabbitmq"
-      RABBITMQ_DEFAULT_PASS: "rabbitmq"
-      TZ: America/Sao_Paulo
+    env_file:
+      - ./infra/envs/rabbitmq.env
     deploy:
       resources:
         limits:
@@ -42,58 +50,38 @@ services:
     expose:
       - '5672:5672'
       - '15672:15672'
-    ports:
-      - '5672:5672'
-      - '15672:15672'
     volumes:
       - rabbitmq:/var/lib/rabbitmq
     network_mode: host
-#    networks:
-#      app:
 
   postgres:
-    image: postgres:latest
+    image: postgres:16.0
     restart: always
     hostname: postgres-srv
-    environment:
-      POSTGRES_HOST_AUTH_METHOD: trust
-      POSTGRES_MULTIPLE_DATABASES: associado,boleto,arquivo
-      TZ: America/Sao_Paulo
-      POSTGRES_TZDATA: /usr/share/zoneinfo/America/Sao_Paulo
+    env_file:
+      - ./infra/envs/postgres.env
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: '1200MB'
-    expose:
-      - '5432'
-    ports:
-      - '5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
       - ./infra/postgres/:/docker-entrypoint-initdb.d/
     network_mode: host
-#    networks:
-#      app:
 
   adminer:
     image: adminer:latest
     restart: always
     hostname: adm-srv
-    environment:
-      ADMINER_DEFAULT_SERVER: postgres-srv
+    env_file:
+      - ./infra/envs/adminer.env
     deploy:
       resources:
         limits:
           cpus: '0.05'
           memory: '15MB'
-    ports:
-      - '8080:8080'
-    expose:
-      - '8080'
     network_mode: host
-#    networks:
-#      app:
 
   prometheus:
     image: prom/prometheus:v2.47.0
@@ -107,21 +95,44 @@ services:
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus:/prometheus
-    ports:
-      - '9090:9090'
-    expose:
-      - '9090'
     network_mode: host
-#    networks:
-#      app:
 
-volumes:
-  postgres:
-    name: 'unicred-postgres'
-  rabbitmq:
-    name: 'unicred-rabbitmq'
-  prometheus:
-    name: 'unicred-prometheus'
+  grafana:
+    image: grafana/grafana:10.1.2
+    restart: always
+    hostname: grafana-srv
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: '300MB'
+    env_file:
+      - ./infra/envs/grafana.env
+    volumes:
+      # - ./infra/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - grafana:/var/lib/grafana
+    network_mode: host
 
-#networks:
-#  app:
+  loki:
+    image: grafana/loki:2.9.1
+    restart: always
+    hostname: loki-srv
+    depends_on:
+      - grafana
+    volumes:
+#      - ./infra/grafana/loki.yaml:/etc/loki/local-config.yaml
+      - loki:/etc/loki
+    network_mode: host
+
+  promtail:
+    image: grafana/promtail:2.9.1
+    restart: always
+    hostname: promtail-srv
+    depends_on:
+      - loki
+    volumes:
+      - ./infra/grafana/promtail.yaml:/etc/promtail/config.yml
+    network_mode: host
+

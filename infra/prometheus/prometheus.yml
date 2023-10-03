@@ -27,11 +27,17 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     static_configs:
-      - targets: [ "localhost:9090" ]
-  - job_name: "associado-service"
+      - targets:
+          - "localhost:9090"
+
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets:
+          - "localhost:15692"
+
+  - job_name: "associado"
     scrape_interval: "5s"
-    scheme: http
     metrics_path: "/actuator/prometheus"
     static_configs:
       - targets:
-          - 'localhost:3000'
+          - "localhost:5000"
